@@ -42,7 +42,7 @@ the regulatory guidance (18 Sep 2025) allocates responsibility.
 | Actor | Role | What they can see | What they store |
 |---|---|---|---|
 | **Parent** | Legal consent authority; enrols child | Everything about own child | A revocation receipt code (offline, theirs) |
-| **Enrolment Verifier (EV)** | Ephemeral, ringfenced SafeGen component | Child's raw number + parent identity **for seconds, in memory only** | Nothing (no local persistence; sole egress is the fixed-schema Vault insert) |
+| **Enrolment Verifier (EV)** | Ephemeral, ringfenced SafeGen component | Child's raw number + parent identity **for seconds, in memory only** | Nothing (no local persistence; network egress limited to the three allow-listed paths in §6) |
 | **Pseudonym Vault (PV)** | SafeGen's only persistent store | Opaque 32-byte pseudonyms + expiry month | `{pseudonym, expiry_month, status, h(receipt)}` |
 | **Evaluation Node (EN)** | Holds OPRF key share **k₁** in HSM | Blinded (uniformly random) group elements | k₁ (non-exportable), rate counters |
 | **Co-signer / Trustee (CT)** | Independent body holding key share **k₂** | Blinded group elements | k₂ (non-exportable), rate counters |
@@ -340,7 +340,7 @@ almost nothing, and the answer to "under what authority?" is layered:
 
 | Information | Collected by | Used for | Fate | s63F posture |
 |---|---|---|---|---|
-| Child's raw mobile number | EV only | OTP dispatch + pseudonym derivation | Zeroed at session end; never written to disk | Destroyed after use — structurally enforced (no local persistence — the EV’s only egress is the fixed-schema, count-reconciled Vault insert) and independently attested; see caveat below |
+| Child's raw mobile number | EV only | OTP dispatch + pseudonym derivation | Zeroed at session end; never written to disk | Destroyed after use — structurally enforced (no local persistence; the only path to the persistent store is the fixed-schema, count-reconciled Vault insert) and independently attested; see caveat below |
 | Parent identity assertion | EV only | Enrolment policy gate | Consumed in-session; only "policy passed" survives | Destroyed after use |
 | Child's birth month/year | EV only | Compute expiry month | Discarded; only expiry month survives | Destroyed after use |
 | OTP / device metadata | EV only | Control-of-number proof | Session only | Destroyed after use |
