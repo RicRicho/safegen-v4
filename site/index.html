@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafeGen — Help keep your child off social media until 16. Without giving anyone their data.</title>
+<meta name="description" content="SafeGen lets parents flag their child's phone number as under-16, so social platforms can keep them off — while nothing SafeGen holds can name, find or contact any child.">
+<style>
+  :root{
+    --ink:#122033;
+    --ink-soft:#3c4c60;
+    --ink-faint:#5d6d82;
+    --paper:#faf8f4;
+    --card:#ffffff;
+    --line:#e6e1d8;
+    --amber:#e8930c;
+    --amber-deep:#8f5606;
+    --amber-soft:#fdf3e0;
+    --teal:#0e6e63;
+    --teal-soft:#e4f2ef;
+    --danger-soft:#fbeaea;
+    --danger:#a33a3a;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(18,32,51,.05),0 8px 28px rgba(18,32,51,.07);
+    --max:1080px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  [id]{scroll-margin-top:84px}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  a{color:var(--teal)}
+
+  /* ---------- nav ---------- */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(250,248,244,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{display:flex;align-items:center;gap:28px;padding:14px 24px;max-width:var(--max);margin:0 auto}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;color:var(--ink);text-decoration:none}
+  .logo svg{flex:none}
+  .nav-links{display:flex;gap:22px;margin-left:auto;align-items:center}
+  .nav-links a{color:var(--ink-soft);text-decoration:none;font-size:.95rem}
+  .nav-links a:hover{color:var(--ink)}
+  .btn{
+    display:inline-block;background:var(--ink);color:#fff !important;text-decoration:none;
+    padding:10px 22px;border-radius:999px;font-weight:600;font-size:.95rem;
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(18,32,51,.18)}
+  .btn.amber{background:var(--amber-deep)}
+  .btn.big{padding:14px 30px;font-size:1.05rem}
+
+  /* ---------- hero ---------- */
+  header.hero{padding:72px 0 64px;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--teal-soft);color:var(--teal);font-weight:600;font-size:.85rem;
+    padding:6px 14px;border-radius:999px;margin-bottom:20px;
+  }
+  h1{font-size:clamp(2rem,4.4vw,3.1rem);line-height:1.13;letter-spacing:-.02em;font-weight:800}
+  h1 .glow{color:var(--amber-deep)}
+  .hero p.lead{font-size:1.18rem;color:var(--ink-soft);margin:22px 0 30px;max-width:34em}
+  .hero-ctas{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .hero-note{font-size:.9rem;color:var(--ink-faint);margin-top:14px}
+  .trust-chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:34px}
+  .chip{
+    display:inline-flex;align-items:center;gap:7px;font-size:.83rem;color:var(--ink-soft);
+    background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;
+  }
+  .chip b{color:var(--ink)}
+
+  /* enrolment mock card */
+  .mock{
+    background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);
+    padding:28px;position:relative;
+  }
+  .mock .mock-head{display:flex;align-items:center;gap:10px;margin-bottom:22px}
+  .mock .mock-head .dot{width:10px;height:10px;border-radius:50%;background:var(--line)}
+  .mock .mock-head .dot:first-child{background:var(--amber)}
+  .mock .mock-title{font-weight:700;font-size:.95rem;margin-left:6px;color:var(--ink-soft)}
+  .mstep{display:flex;gap:14px;padding:13px 0;border-bottom:1px dashed var(--line);align-items:flex-start}
+  .mstep:nth-last-of-type(2){border-bottom:none}
+  .mstep .n{
+    flex:none;width:28px;height:28px;border-radius:50%;background:var(--amber-soft);
+    color:var(--amber-deep);font-weight:700;font-size:.85rem;display:grid;place-items:center;margin-top:2px;
+  }
+  .mstep .t b{display:block;font-size:.95rem}
+  .mstep .t span{font-size:.85rem;color:var(--ink-faint)}
+  .mstep .time{margin-left:auto;flex:none;font-size:.78rem;color:var(--teal);background:var(--teal-soft);border-radius:999px;padding:3px 10px;margin-top:4px}
+  .mock .mock-foot{
+    margin-top:20px;background:var(--amber-soft);border-radius:12px;padding:14px 16px;
+    font-size:.87rem;color:var(--amber-deep);display:flex;gap:10px;align-items:flex-start;
+  }
+
+  /* ---------- sections ---------- */
+  section{padding:72px 0}
+  section.alt{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .kicker{color:var(--amber-deep);font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em}
+  h2{font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-.015em;margin:10px 0 14px;font-weight:800}
+  .sub{color:var(--ink-soft);max-width:44em;font-size:1.05rem}
+
+  /* hold / never hold */
+  .hold-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
+  .hold-card{border-radius:var(--radius);padding:30px;border:1px solid var(--line)}
+  .hold-card.keep{background:var(--teal-soft);border-color:#cbe4df}
+  .hold-card.never{background:var(--danger-soft);border-color:#efd3d3}
+  .hold-card h3{display:flex;align-items:center;gap:10px;font-size:1.1rem;margin-bottom:16px}
+  .hold-card.keep h3{color:var(--teal)}
+  .hold-card.never h3{color:var(--danger)}
+  .hold-card ul{list-style:none}
+  .hold-card li{padding:9px 0;border-bottom:1px solid rgba(18,32,51,.06);font-size:.97rem;display:flex;gap:10px;align-items:flex-start}
+  .hold-card li:last-child{border-bottom:none}
+  .hold-card li .mark{flex:none;font-weight:700;margin-top:1px}
+  .hold-card.keep li .mark{color:var(--teal)}
+  .hold-card.never li .mark{color:var(--danger)}
+  .hold-card li small{display:block;color:var(--ink-faint)}
+  .plain-box{
+    margin-top:26px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--amber);
+    border-radius:10px;padding:20px 24px;font-size:1rem;color:var(--ink-soft);
+  }
+  .plain-box b{color:var(--ink)}
+
+  /* steps */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:44px}
+  .step{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:28px;box-shadow:var(--shadow);position:relative;
+  }
+  section.alt .step{box-shadow:none;background:var(--paper)}
+  .step .num{
+    width:40px;height:40px;border-radius:12px;background:var(--amber-soft);color:var(--amber-deep);
+    font-weight:800;display:grid;place-items:center;font-size:1.1rem;margin-bottom:18px;
+  }
+  .step h3{font-size:1.08rem;margin-bottom:8px}
+  .step p{font-size:.95rem;color:var(--ink-soft)}
+  .step .fine{margin-top:14px;font-size:.83rem;color:var(--ink-faint);border-top:1px dashed var(--line);padding-top:12px}
+
+  /* how safe */
+  .safe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:44px}
+  .safe{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+  .safe .ic{
+    width:44px;height:44px;border-radius:12px;background:var(--teal-soft);display:grid;place-items:center;margin-bottom:16px;
+  }
+  .safe h3{font-size:1.05rem;margin-bottom:8px}
+  .safe p{font-size:.93rem;color:var(--ink-soft)}
+
+  /* platform strip */
+  .how-strip{
+    margin-top:48px;background:var(--ink);color:#e8edf4;border-radius:20px;padding:36px 40px;
+    display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;
+  }
+  .how-strip .lamp{font-size:2.2rem}
+  .how-strip h3{color:#fff;font-size:1.15rem;margin-bottom:8px}
+  .how-strip p{font-size:.97rem;color:#b9c4d2;max-width:58em}
+  .how-strip b{color:#f3c96b}
+
+  /* faq */
+  .faq{max-width:820px;margin:40px auto 0}
+  details{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    margin-bottom:12px;overflow:hidden;
+  }
+  summary{
+    cursor:pointer;padding:18px 22px;font-weight:600;font-size:1rem;list-style:none;
+    display:flex;align-items:center;gap:12px;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary .tw{margin-left:auto;color:var(--amber-deep);font-weight:700;transition:transform .15s}
+  details[open] summary .tw{transform:rotate(45deg)}
+  details .a{padding:0 22px 20px;color:var(--ink-soft);font-size:.97rem}
+  details .a p+p{margin-top:10px}
+
+  /* final cta */
+  .final{
+    text-align:center;background:linear-gradient(180deg,var(--amber-soft),var(--paper));
+    border-radius:24px;padding:64px 32px;margin:0 0 72px;border:1px solid #f0e2c8;
+  }
+  .final h2{margin-bottom:12px}
+  .final p{color:var(--ink-soft);max-width:36em;margin:0 auto 28px}
+
+  footer{border-top:1px solid var(--line);padding:36px 0 48px;color:var(--ink-faint);font-size:.86rem}
+  .foot-grid{display:flex;gap:24px;flex-wrap:wrap;justify-content:space-between;align-items:flex-start}
+  .foot-grid .fcol{max-width:44em}
+  footer a{color:var(--ink-soft)}
+
+  @media (max-width:860px){
+    .hero-grid{grid-template-columns:1fr;gap:40px}
+    .hold-grid,.steps,.safe-grid{grid-template-columns:1fr}
+    .how-strip{grid-template-columns:1fr;padding:28px}
+    .nav-links a.mob-hide{display:none}
+    .nav-links{gap:14px}
+    .nav-links a{font-size:.88rem}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="#top" aria-label="SafeGen home">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2 4 5v6c0 5 3.4 9.2 8 11 4.6-1.8 8-6 8-11V5l-8-3Z" fill="#e8930c"/>
+        <path d="m8.6 11.8 2.3 2.3 4.5-4.6" stroke="#122033" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      SafeGen
+    </a>
+    <div class="nav-links">
+      <a class="mob-hide" href="#how">How it works</a>
+      <a href="#hold">What we hold</a>
+      <a class="mob-hide" href="#safety">Safety</a>
+      <a href="#faq">Questions</a>
+      <a class="btn amber" href="#enrol">Enrol my child</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">✓ &nbsp;Built for Australia’s under-16 social media law</span>
+      <h1>Keep your child off social media until 16.<br><span class="glow">Without handing anyone their data.</span></h1>
+      <p class="lead">
+        Two minutes of your time tells every participating platform your child is under 16 —
+        so “I’m 18” doesn’t work, deleted accounts stay deleted, and switching apps doesn’t reset anything.
+        We keep <b>no name, no birthday, no photo — not even their phone number.</b>
+      </p>
+      <div class="hero-ctas">
+        <a class="btn amber big" href="#enrol">Enrol my child — about 2 minutes</a>
+        <a href="#hold" style="font-weight:600">See exactly what we keep →</a>
+      </div>
+      <p class="hero-note">Free for parents. No account. No app. Undo it any time. About 60 seconds for each child after your first.</p>
+      <div class="trust-chips">
+        <span class="chip">🔒 Nothing we hold can <b>name, find or contact</b> a child</span>
+        <span class="chip">🗑️ Every record self-deletes <b>the month they turn 16</b></span>
+        <span class="chip">🇦🇺 Independently audited · privacy law enforced by the <b>OAIC</b></span>
+      </div>
+    </div>
+
+    <div class="mock" id="enrol" role="region" aria-label="Preview of the enrolment flow">
+      <div class="mock-head">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="mock-title">Preview — the whole flow, once per child</span>
+      </div>
+      <div class="mstep">
+        <span class="n">1</span>
+        <span class="t"><b>Confirm you’re an adult</b><span>A yes/no check through your bank’s ID service. We see “verified adult” — never your documents.</span></span>
+        <span class="time">~1 min, first time</span>
+      </div>
+      <div class="mstep">
+        <span class="n">2</span>
+        <span class="t"><b>Enter your child’s mobile number</b><span>Plus their birth <i>month</i> — just enough to know when they turn 16.</span></span>
+        <span class="time">~15 sec</span>
+      </div>
+      <div class="mstep">
+        <span class="n">3</span>
+        <span class="t"><b>Enter the code sent to their phone</b><span>Proves it’s really your child’s number. Do it together — it works best as a conversation.</span></span>
+        <span class="time">~25 sec</span>
+      </div>
+      <div class="mock-foot">
+        <span>🔑</span>
+        <span><b>Then the number itself is destroyed.</b> What remains is a scrambled code no one can reverse, and an undo key you keep. That’s the whole relationship.</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="alt" id="hold">
+  <div class="wrap">
+    <span class="kicker">Radical transparency</span>
+    <h2>What we hold. What we never hold.</h2>
+    <p class="sub">This is the entire record SafeGen keeps about your family. Not a summary — the whole thing.</p>
+
+    <div class="hold-grid">
+      <div class="hold-card keep">
+        <h3>✓ &nbsp;What we hold (all of it)</h3>
+        <ul>
+          <li><span class="mark">✓</span><span>A <b>scrambled code</b> made from your child’s number<small>32 random-looking bytes. Turning it back into a phone number would require breaking into two separate organisations’ security hardware at once.</small></span></li>
+          <li><span class="mark">✓</span><span>The <b>month your child turns 16</b><small>So the record can delete itself on time. We don’t keep the birthday itself.</small></span></li>
+          <li><span class="mark">✓</span><span>A fingerprint of your <b>undo key</b><small>So you can cancel any time — without us knowing who you are.</small></span></li>
+        </ul>
+      </div>
+      <div class="hold-card never">
+        <h3>✕ &nbsp;What we never hold</h3>
+        <ul>
+          <li><span class="mark">✕</span><span>Your child’s <b>name, birthday, photo, school</b> — or their actual phone number</span></li>
+          <li><span class="mark">✕</span><span><b>Your</b> name, ID documents, or contact details<small>Your identity check is used for a moment, then destroyed. We couldn’t contact you if we wanted to — so keep your undo key safe; it also lets you check the enrolment’s status on this site any time.</small></span></li>
+          <li><span class="mark">✕</span><span>Any record of <b>which apps checked</b>, or what they found<small>Matching happens inside the platform. We never see it.</small></span></li>
+          <li><span class="mark">✕</span><span>Anything at all after <b>the month your child turns 16</b><small>The record hard-deletes itself. SafeGen forgets every child, automatically.</small></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="plain-box">
+      <b>Why the law is on your side here:</b> Australia’s Online Safety Act (section 63F) requires
+      that personal information collected for age checks be <b>destroyed after use</b> — and the
+      Privacy Commissioner (OAIC) enforces it. SafeGen was designed backwards from that rule:
+      the only thing that survives your one-minute visit is a code that identifies no one,
+      kept with your explicit consent, and only until your child turns 16.
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <span class="kicker">How it works</span>
+    <h2>One enrolment. Every participating platform. Zero shared data.</h2>
+    <p class="sub">SafeGen doesn’t watch your child, scan their face, or sit on their phone. It simply lets platforms recognise a number a parent has vouched for — nothing more.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <h3>You vouch, once</h3>
+        <p>You confirm you’re an adult, and that the mobile number your child uses belongs to someone under 16. A code sent to their phone proves the number is really theirs.</p>
+        <p class="fine">Best done together — many families pair it with the “you can have the phone, not the apps” conversation.</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h3>The number becomes a code</h3>
+        <p>Before anything is stored, the number is transformed using keys split between two independent organisations. Neither can reverse it alone. The real number is destroyed in seconds.</p>
+        <p class="fine">This isn’t a pinky-promise deletion — the system has nowhere to store a phone number, and independent auditors verify that.</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h3>Platforms recognise, privately</h3>
+        <p>When someone signs up (or already has an account) with that number, the platform’s own systems get a single quiet signal: <i>a parent has vouched this number belongs to a minor.</i></p>
+        <p class="fine">The platform then runs its normal age process. If it’s ever wrong — say, a recycled number — an adult simply passes that check once. A wrong flag costs one extra check, not a lockout.</p>
+      </div>
+    </div>
+
+    <div class="how-strip">
+      <div class="lamp">🛡️</div>
+      <div>
+        <h3>Why this actually works when age checks alone don’t</h3>
+        <p>
+          Today, a determined 14-year-old just deletes the app, makes a new account, and types a new birthday —
+          or tries the face-scan again until it passes. SafeGen changes the game because <b>the signal follows the
+          number, not the account.</b> New account, new app, new email — same phone, same answer. And a confident
+          selfie doesn’t move it, because SafeGen isn’t guessing anyone’s age. <b>A parent said so, out-of-band.</b>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="safety">
+  <div class="wrap">
+    <span class="kicker">Safety by architecture</span>
+    <h2>“Is this a government database of children?” No. Here’s why it can’t become one.</h2>
+    <p class="sub">We didn’t write a privacy policy and hope. We built a system where the scary version can’t be built quietly — breaking the promise would require two independent organisations acting together, in public view.</p>
+
+    <div class="safe-grid">
+      <div class="safe">
+        <div class="ic">🧩</div>
+        <h3>The keys are split</h3>
+        <p>Unscrambling even one code needs two separate organisations — SafeGen and an independent trustee — to act together. A hacker, a rogue employee, or a demand served on either one gets random bytes.</p>
+      </div>
+      <div class="safe">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true"><circle cx="6.5" cy="11" r="4" stroke="#0e6e63" stroke-width="2"/><circle cx="15.5" cy="11" r="4" stroke="#0e6e63" stroke-width="2"/><line x1="11" y1="3" x2="11" y2="19" stroke="#0e6e63" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h3>Double-blind checks</h3>
+        <p>Platforms check numbers in scrambled form, and the match happens on <i>their</i> side. We never learn which child is on which app. They never get a list — only answers about numbers they already have.</p>
+      </div>
+      <div class="safe">
+        <div class="ic">⏳</div>
+        <h3>It forgets on schedule</h3>
+        <p>Every record carries its own expiry: the month your child turns 16. It deletes itself — no request needed. And your undo key removes it any time before that, within 24 hours.</p>
+      </div>
+      <div class="safe">
+        <div class="ic">📊</div>
+        <h3>Watched in public</h3>
+        <p>Every system update and every platform’s query volume is published to a public, tamper-evident log — so unusual behaviour is visible to researchers and regulators, not just to us.</p>
+      </div>
+      <div class="safe">
+        <div class="ic">🏛️</div>
+        <h3>Regulated, not run, by government</h3>
+        <p>eSafety and the OAIC oversee and audit. They receive statistics, never data. There is no feed to any agency — nothing exists that could be fed.</p>
+      </div>
+      <div class="safe">
+        <div class="ic">🧯</div>
+        <h3>A real off switch</h3>
+        <p>If SafeGen ever had to shut down, destroying the two keys instantly turns every stored code — including any old backup, anywhere — into permanently meaningless noise.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <span class="kicker">Questions parents ask</span>
+    <h2>Fair questions. Straight answers.</h2>
+
+    <div class="faq">
+      <details>
+        <summary>Can platforms see my child’s phone number or identity? <span class="tw">+</span></summary>
+        <div class="a"><p>They never receive anything from us. Platforms already have the phone numbers of their own users — that’s how signup works today. SafeGen only lets a platform check, in scrambled form, whether a number <i>it already holds</i> was vouched for by a parent. It learns yes or no. It cannot browse, search, or download a list, and it learns nothing about numbers it doesn’t already have.</p></div>
+      </details>
+      <details>
+        <summary>What if my child gets a new number or a new phone? <span class="tw">+</span></summary>
+        <div class="a"><p>A new number means a fresh one-minute enrolment — we’ll never know about the change otherwise, because we don’t track anyone. A new phone with the same number changes nothing.</p></div>
+      </details>
+      <details>
+        <summary>What happens when my child turns 16? <span class="tw">+</span></summary>
+        <div class="a"><p>The record deletes itself that month, automatically. Platforms stop seeing the signal, and SafeGen holds nothing about your child — there is no “dormant file”. You don’t need to do anything.</p></div>
+      </details>
+      <details>
+        <summary>Can I undo this? <span class="tw">+</span></summary>
+        <div class="a"><p>Yes, any time. At enrolment you get an undo key — a short code we show you once. Enter it on this site and the record is removed within 24 hours. Lost the key? Removal is still possible with a confirmation code to the phone <b>plus</b> a fresh verified-adult check — so a parent can always undo it, but a child can’t quietly unenrol themselves.</p></div>
+      </details>
+      <details>
+        <summary>Is this a government database? Will eSafety or police get the list? <span class="tw">+</span></summary>
+        <div class="a"><p>No — and this is the part we’re proudest of. <b>There is no list.</b> What we store is a set of scrambled codes that identify no one, reversible only if two independent organisations’ secure hardware were compromised at the same time. A subpoena served on SafeGen yields random bytes. Regulators audit <i>how we operate</i>; they receive statistics, never records.</p></div>
+      </details>
+      <details>
+        <summary>What if someone enrols a number that doesn’t belong to a child — by mistake or maliciously? <span class="tw">+</span></summary>
+        <div class="a"><p>Three protections. First, enrolment requires receiving a code on that actual phone — you can’t flag a number you don’t hold. Second, the enrolling adult passes an identity check, so it’s never anonymous. Third — and most important — a SafeGen signal never blocks anyone by itself. It simply sends that account through the platform’s standard age check, which an adult passes once. The worst case of a wrong enrolment is one extra verification prompt, and any verified adult holding the phone can remove the record at any time.</p></div>
+      </details>
+      <details>
+        <summary>Does my child know? Should they? <span class="tw">+</span></summary>
+        <div class="a"><p>Yes — the enrolment includes a code sent to their phone, so it’s designed to be done together, not behind their back. Parents tell us it lands best as part of a straightforward conversation: “This is the family rule until you’re 16, and it’s the same rule the law sets for every kid in Australia.”</p></div>
+      </details>
+      <details>
+        <summary>Why should I trust you? Every company says they care about privacy. <span class="tw">+</span></summary>
+        <div class="a"><p>Don’t trust us — check us. Our protocol is published and independently reviewed; certified auditors verify that the system physically has no place to keep phone numbers; our query volumes and software versions sit in a public tamper-evident log; and Australia’s privacy regulator can (and does) hold us to section 63F, which makes keeping your data <i>illegal</i>, not just off-brand. The honest summary: we designed SafeGen so that trusting us is never the load-bearing part.</p></div>
+      </details>
+      <details>
+        <summary>Is this compulsory? Whose idea is it? <span class="tw">+</span></summary>
+        <div class="a"><p>Entirely voluntary, and it exists because parents kept asking for something that actually works. Australia’s under-16 law made platforms responsible for keeping kids off — but their checks can be gamed and reset. SafeGen gives your decision, as the parent, a way to stick: across accounts, across apps, until 16.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="final">
+    <h2>Two minutes now. Sixteen, when it should be.</h2>
+    <p>Enrol together, keep the undo key, and let every participating platform quietly hold the line you’ve already drawn at home.</p>
+    <a class="btn amber big" href="#enrol">Enrol my child — free, about 2 minutes</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot-grid">
+    <div class="fcol">
+      <b style="color:var(--ink)">SafeGen</b> — a signal, not a list.<br>
+      Independently audited age-assurance infrastructure supporting Australia’s Social Media Minimum Age framework.
+      SafeGen is adopted by platforms as part of their “reasonable steps” and operates under the Online Safety Act 2021
+      (incl. s63F destruction obligations, enforced by the OAIC) and the Privacy Act 1988.
+    </div>
+    <div>
+      <a href="#hold">What we hold</a> &nbsp;·&nbsp; <a href="#safety">Safety architecture</a> &nbsp;·&nbsp;
+      <a href="#faq">FAQ</a> &nbsp;·&nbsp; <span>Protocol &amp; audit reports — published from pilot launch</span> &nbsp;·&nbsp; <a href="#faq">Remove an enrolment (see “Can I undo this?”)</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
