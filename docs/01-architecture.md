@@ -73,7 +73,8 @@ Two structural rules do most of the privacy work:
   per-share proofs** (see §3.2). Verifiability matters: it lets a platform detect a malicious
   service trying to give different platforms *different* PRF outputs (which would otherwise enable
   response-tagging / traffic segmentation).
-- Membership structure: signed **cuckoo filter** snapshots. Deliberate sizing choice: FPR 2⁻¹⁰ at
+- Membership structure: signed **cuckoo filter** snapshots (chosen over bloom filters,
+  cryptographic accumulators and full PSI — the evaluation is §3.5). Deliberate sizing choice: FPR 2⁻¹⁰ at
   5M capacity ≈ 8 MB (≈13-bit fingerprints at ~0.95 load; a 20M-account batch screen yields ~20k
   false hits, each costing one ordinary waterfall check — acceptable by design, and false
   positives add plausible deniability to filter contents); a 2⁻²⁰ build (≈15 MB, 23-bit
@@ -151,6 +152,34 @@ computable jointly by the two key holders from the stored pseudonyms alone). Con
   carry a pre-rotation dictionary across the ratchet via row correspondence.
 - Rotation is also the periodic, rehearsed proof that the kill switch works (a rotation where the
   old keys are destroyed and no new ones are created *is* the shutdown procedure).
+
+### 3.5 Query-path structure: bloom filter vs cryptographic accumulator vs PSI
+
+Three families were evaluated for "platform asks, gets yes/no, can never harvest a list". The
+constraint that kills most of them is the same one from T1: the AU mobile space is only ~10⁸
+numbers, so any structure whose elements a holder can *recompute* is a dictionary waiting to
+be run.
+
+| Option | What it buys | Why it fails alone |
+|---|---|---|
+| **Plain bloom filter over salted, high-cost hashes** (scrypt/Argon2, public or derivable salt) | Tiny, offline, no per-query traffic to a central service | Whoever holds the filter can test all 10⁸ candidates. A memory-hard hash raises the cost only linearly — at 100 ms/guess that is ~4 months on one machine, days on a cluster, done once for every child enrolled. The distributed artefact itself becomes the harvestable list. Breach-useless: **no.** |
+| **Cryptographic accumulator** (RSA / bilinear, constant-size commitment + membership witnesses) | Elegant constant-size public value; witnesses prove membership without revealing the set | Witnesses must be issued by a party that knows the set (or holds the trapdoor), so an online authority sees every query anyway — the accumulator removes nothing. Deletions (a cohort ages out *every month*) force witness refresh for all outstanding witnesses; trapdoor custody recreates the honeypot; and if the accumulated elements are unkeyed hashes of numbers, the 10⁸ dictionary attack returns through the front door. Complexity up, threat surface unchanged. |
+| **Full PSI** (e.g. DH/OPRF-based private set intersection run per platform) | Strongest formal guarantee: each side learns only the intersection | The registry-side privacy PSI adds is privacy *we don't need at that layer* — the platform is **supposed** to learn which of its own accounts matched (that is the product). Meanwhile a symmetric PSI over a 20M-account platform set, per platform, per snapshot epoch, is heavy and forces every screen through live interaction with the registry. |
+
+**Chosen: the hybrid the PSI literature calls *unbalanced OPRF-PSI*, split into its two halves.**
+The split-key VOPRF (§3.2) is the *keyed* half: pseudonyms are PRF outputs nobody can compute
+offline, which is precisely what the bloom-filter option was missing — the dictionary attack now
+requires online, rate-limited, publicly volume-logged evaluations against two HSMs instead of a
+laptop (T1). The signed cuckoo filter is the *offline* half: once a platform has obliviously
+derived pseudonyms for its own identifiers, membership testing is local, so the registry never
+sees which accounts a platform screened, and there is no per-query central lookup to log, breach,
+or subpoena (T4, T8).
+
+Within the filter family, **cuckoo beats bloom** here for three concrete reasons: it supports
+**deletion** (records hard-delete the month each child turns 16 — a standard bloom filter cannot
+forget, and a counting bloom pays ~4× space); it is smaller at the low FPRs we target (13–23-bit
+fingerprints, §3.1); and lookups touch a bounded two buckets, which matters at 20M-account batch
+scale. The deliberate non-zero FPR doubles as plausible deniability for any single "yes".
 
 ---
 
