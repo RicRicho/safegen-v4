@@ -65,7 +65,7 @@
     padding:6px 14px;border-radius:999px;margin-bottom:20px;
   }
   h1{font-size:clamp(2rem,4.4vw,3.1rem);line-height:1.13;letter-spacing:-.02em;font-weight:800}
-  h1 .glow{color:var(--amber-deep)}
+  h1 .accent{color:var(--amber-deep)}
   .hero p.lead{font-size:1.18rem;color:var(--ink-soft);margin:22px 0 30px;max-width:34em}
   .hero-ctas{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
   .hero-note{font-size:.9rem;color:var(--ink-faint);margin-top:14px}
@@ -156,7 +156,7 @@
     margin-top:48px;background:var(--ink);color:#e8edf4;border-radius:20px;padding:36px 40px;
     display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;
   }
-  .how-strip .lamp{font-size:2.2rem}
+  .how-strip .strip-icon{font-size:2.2rem}
   .how-strip h3{color:#fff;font-size:1.15rem;margin-bottom:8px}
   .how-strip p{font-size:.97rem;color:#b9c4d2;max-width:58em}
   .how-strip b{color:#f3c96b}
@@ -198,6 +198,9 @@
     .nav-links{gap:14px}
     .nav-links a{font-size:.88rem}
   }
+  @media (max-width:480px){
+    .nav-links .btn{padding:8px 14px;font-size:.85rem}
+  }
 </style>
 </head>
 <body>
@@ -213,7 +216,7 @@
     </a>
     <div class="nav-links">
       <a class="mob-hide" href="#how">How it works</a>
-      <a href="#hold">What we hold</a>
+      <a class="mob-hide" href="#hold">What we hold</a>
       <a class="mob-hide" href="#safety">Safety</a>
       <a href="#faq">Questions</a>
       <a class="btn amber" href="#enrol">Enrol my child</a>
@@ -225,7 +228,7 @@
   <div class="wrap hero-grid">
     <div>
       <span class="eyebrow">✓ &nbsp;Built for Australia’s under-16 social media law</span>
-      <h1>Keep your child off social media until 16.<br><span class="glow">Without handing anyone their data.</span></h1>
+      <h1>Keep your child off social media until 16.<br><span class="accent">Without handing anyone their data.</span></h1>
       <p class="lead">
         Two minutes of your time tells every participating platform your child is under 16 —
         so “I’m 18” doesn’t work, deleted accounts stay deleted, and switching apps doesn’t reset anything.
@@ -235,18 +238,18 @@
         <a class="btn amber big" href="#enrol">Enrol my child — about 2 minutes</a>
         <a href="#hold" style="font-weight:600">See exactly what we keep →</a>
       </div>
-      <p class="hero-note">Free for parents. No account. No app. Undo it any time. About 60 seconds for each child after your first.</p>
+      <p class="hero-note">Free for parents. No account. No app. Undo it any time. About 60 seconds for each child after your first, in the same visit.</p>
       <div class="trust-chips">
-        <span class="chip">🔒 Nothing we hold can <b>name, find or contact</b> a child</span>
-        <span class="chip">🗑️ Every record self-deletes <b>the month they turn 16</b></span>
-        <span class="chip">🇦🇺 Independently audited · privacy law enforced by the <b>OAIC</b></span>
+        <span class="chip"><span aria-hidden="true">🔒</span> Nothing we hold can <b>name, find or contact</b> a child</span>
+        <span class="chip"><span aria-hidden="true">🗑️</span> Every record self-deletes <b>the month they turn 16</b></span>
+        <span class="chip"><span aria-hidden="true">🇦🇺</span> Audited independently before launch · answerable to the <b>OAIC</b></span>
       </div>
     </div>
 
     <div class="mock" id="enrol" role="region" aria-label="Preview of the enrolment flow">
       <div class="mock-head">
         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-        <span class="mock-title">Preview — the whole flow, once per child</span>
+        <span class="mock-title">Preview (demo) — how enrolment will work</span>
       </div>
       <div class="mstep">
         <span class="n">1</span>
@@ -264,8 +267,8 @@
         <span class="time">~25 sec</span>
       </div>
       <div class="mock-foot">
-        <span>🔑</span>
-        <span><b>Then the number itself is destroyed.</b> What remains is a scrambled code no one can reverse, and an undo key you keep. That’s the whole relationship.</span>
+        <span aria-hidden="true">🔑</span>
+        <span><b>Then the number itself is destroyed.</b> What remains is a scrambled code that can’t be turned back into a phone number without breaking into two separate organisations’ security at once, and an undo key you keep. That’s the whole relationship.</span>
       </div>
     </div>
   </div>
@@ -273,7 +276,7 @@
 
 <section class="alt" id="hold">
   <div class="wrap">
-    <span class="kicker">Radical transparency</span>
+    <span class="kicker">Nothing hidden</span>
     <h2>What we hold. What we never hold.</h2>
     <p class="sub">This is the entire record SafeGen keeps about your family. Not a summary — the whole thing.</p>
 
@@ -281,7 +284,7 @@
       <div class="hold-card keep">
         <h3>✓ &nbsp;What we hold (all of it)</h3>
         <ul>
-          <li><span class="mark">✓</span><span>A <b>scrambled code</b> made from your child’s number<small>32 random-looking bytes. Turning it back into a phone number would require breaking into two separate organisations’ security hardware at once.</small></span></li>
+          <li><span class="mark">✓</span><span>A <b>scrambled code</b> made from your child’s number<small>32 random-looking characters. Turning it back into a phone number would require breaking into two separate organisations’ security hardware at once.</small></span></li>
           <li><span class="mark">✓</span><span>The <b>month your child turns 16</b><small>So the record can delete itself on time. We don’t keep the birthday itself.</small></span></li>
           <li><span class="mark">✓</span><span>A fingerprint of your <b>undo key</b><small>So you can cancel any time — without us knowing who you are.</small></span></li>
         </ul>
@@ -301,7 +304,7 @@
       <b>Why the law is on your side here:</b> Australia’s Online Safety Act (section 63F) requires
       that personal information collected for age checks be <b>destroyed after use</b> — and the
       Privacy Commissioner (OAIC) enforces it. SafeGen was designed backwards from that rule:
-      the only thing that survives your one-minute visit is a code that identifies no one,
+      the only thing that survives your two-minute visit is a code that identifies no one,
       kept with your explicit consent, and only until your child turns 16.
     </div>
   </div>
@@ -324,25 +327,24 @@
         <div class="num">2</div>
         <h3>The number becomes a code</h3>
         <p>Before anything is stored, the number is transformed using keys split between two independent organisations. Neither can reverse it alone. The real number is destroyed in seconds.</p>
-        <p class="fine">This isn’t a pinky-promise deletion — the system has nowhere to store a phone number, and independent auditors verify that.</p>
+        <p class="fine">This isn’t a pinky-promise deletion — the system has nowhere to store a phone number — and independent auditors will verify that before launch, with the reports published.</p>
       </div>
       <div class="step">
         <div class="num">3</div>
         <h3>Platforms recognise, privately</h3>
         <p>When someone signs up (or already has an account) with that number, the platform’s own systems get a single quiet signal: <i>a parent has vouched this number belongs to a minor.</i></p>
-        <p class="fine">The platform then runs its normal age process. If it’s ever wrong — say, a recycled number — an adult simply passes that check once. A wrong flag costs one extra check, not a lockout.</p>
+        <p class="fine">The platform then runs its strictest age check — proper verification, not a selfie your child can simply retry. If the flag is ever wrong — say, a recycled number — an adult passes that check once. A wrong flag costs one extra check, not a lockout.</p>
       </div>
     </div>
 
     <div class="how-strip">
-      <div class="lamp">🛡️</div>
+      <div class="strip-icon" aria-hidden="true">🛡️</div>
       <div>
         <h3>Why this actually works when age checks alone don’t</h3>
         <p>
           Today, a determined 14-year-old just deletes the app, makes a new account, and types a new birthday —
           or tries the face-scan again until it passes. SafeGen changes the game because <b>the signal follows the
-          number, not the account.</b> New account, new app, new email — same phone, same answer. And a confident
-          selfie doesn’t move it, because SafeGen isn’t guessing anyone’s age. <b>A parent said so, out-of-band.</b>
+          number, not the account.</b> New account, new app, new email — same phone, same answer. And a confident selfie doesn’t move it, because SafeGen isn’t guessing anyone’s age — <b>a parent said so, in the real world.</b> A flagged number goes to the platform’s strictest check, not back to the selfie camera, and retrying doesn’t clear it.
         </p>
       </div>
     </div>
@@ -351,13 +353,13 @@
 
 <section class="alt" id="safety">
   <div class="wrap">
-    <span class="kicker">Safety by architecture</span>
+    <span class="kicker">Safe by design</span>
     <h2>“Is this a government database of children?” No. Here’s why it can’t become one.</h2>
     <p class="sub">We didn’t write a privacy policy and hope. We built a system where the scary version can’t be built quietly — breaking the promise would require two independent organisations acting together, in public view.</p>
 
     <div class="safe-grid">
       <div class="safe">
-        <div class="ic">🧩</div>
+        <div class="ic" aria-hidden="true">🧩</div>
         <h3>The keys are split</h3>
         <p>Unscrambling even one code needs two separate organisations — SafeGen and an independent trustee — to act together. A hacker, a rogue employee, or a demand served on either one gets random bytes.</p>
       </div>
@@ -367,24 +369,24 @@
         <p>Platforms check numbers in scrambled form, and the match happens on <i>their</i> side. We never learn which child is on which app. They never get a list — only answers about numbers they already have.</p>
       </div>
       <div class="safe">
-        <div class="ic">⏳</div>
+        <div class="ic" aria-hidden="true">⏳</div>
         <h3>It forgets on schedule</h3>
         <p>Every record carries its own expiry: the month your child turns 16. It deletes itself — no request needed. And your undo key removes it any time before that, within 24 hours.</p>
       </div>
       <div class="safe">
-        <div class="ic">📊</div>
+        <div class="ic" aria-hidden="true">📊</div>
         <h3>Watched in public</h3>
-        <p>Every system update and every platform’s query volume is published to a public, tamper-evident log — so unusual behaviour is visible to researchers and regulators, not just to us.</p>
+        <p>Every system update and every platform’s query volume goes into a public record that no one can quietly edit — so unusual behaviour is visible to researchers and regulators, not just to us.</p>
       </div>
       <div class="safe">
-        <div class="ic">🏛️</div>
+        <div class="ic" aria-hidden="true">🏛️</div>
         <h3>Regulated, not run, by government</h3>
         <p>eSafety and the OAIC oversee and audit. They receive statistics, never data. There is no feed to any agency — nothing exists that could be fed.</p>
       </div>
       <div class="safe">
-        <div class="ic">🧯</div>
+        <div class="ic" aria-hidden="true">🧯</div>
         <h3>A real off switch</h3>
-        <p>If SafeGen ever had to shut down, destroying the two keys instantly turns every stored code — including any old backup, anywhere — into permanently meaningless noise.</p>
+        <p>If SafeGen ever had to shut down, destroying the two keys means no stored code — including any old backup, anywhere — can ever be matched or checked again.</p>
       </div>
     </div>
   </div>
@@ -402,7 +404,7 @@
       </details>
       <details>
         <summary>What if my child gets a new number or a new phone? <span class="tw">+</span></summary>
-        <div class="a"><p>A new number means a fresh one-minute enrolment — we’ll never know about the change otherwise, because we don’t track anyone. A new phone with the same number changes nothing.</p></div>
+        <div class="a"><p>A new number means a fresh enrolment (about two minutes) — we’ll never know about the change otherwise, because we don’t track anyone. A new phone with the same number changes nothing.</p></div>
       </details>
       <details>
         <summary>What happens when my child turns 16? <span class="tw">+</span></summary>
@@ -418,7 +420,23 @@
       </details>
       <details>
         <summary>What if someone enrols a number that doesn’t belong to a child — by mistake or maliciously? <span class="tw">+</span></summary>
-        <div class="a"><p>Three protections. First, enrolment requires receiving a code on that actual phone — you can’t flag a number you don’t hold. Second, the enrolling adult passes an identity check, so it’s never anonymous. Third — and most important — a SafeGen signal never blocks anyone by itself. It simply sends that account through the platform’s standard age check, which an adult passes once. The worst case of a wrong enrolment is one extra verification prompt, and any verified adult holding the phone can remove the record at any time.</p></div>
+        <div class="a"><p>Three protections. First, enrolment requires receiving a code on that actual phone — you can’t flag a number you don’t hold. Second, every enrolment starts with a verified-adult check — a real person is at the door, even though we keep no record of who. Third — and most important — a SafeGen signal never blocks anyone by itself. It simply sends that account through the platform’s standard age check, which an adult passes once. The worst case of a wrong enrolment is one extra verification prompt, and any verified adult holding the phone can remove the record at any time.</p></div>
+      </details>
+            <details>
+        <summary>Which apps does this work on? <span class="tw">+</span></summary>
+        <div class="a"><p>Participating platforms — the goal is every service covered by Australia’s under-16 law, and the pilot starts with the biggest ones. We’ll publish the live list right here, and it should grow: platforms have a strong reason to join, because using a signal like this counts toward the “reasonable steps” the law already demands of them.</p><p>Honest answer for the rest: on an app that doesn’t participate, the flag does nothing — your child is covered there by that platform’s own checks and the law’s pressure on it. SafeGen adds a layer wherever it’s adopted; it doesn’t replace the law anywhere.</p></div>
+      </details>
+      <details>
+        <summary>It’s free for parents — so who pays? <span class="tw">+</span></summary>
+        <div class="a"><p>Platforms pay. Keeping under-16s off is <i>their</i> legal obligation, with fines that make a reliable signal cheap by comparison — so they pay a service fee, the same way they already pay for fraud and security checks. Parents never pay a cent. And your family’s data can’t quietly become the product, for a simple reason: we don’t hold any to sell.</p></div>
+      </details>
+      <details>
+        <summary>What if the other parent disagrees, or we’re separated? <span class="tw">+</span></summary>
+        <div class="a"><p>SafeGen can’t referee family disagreements — and it’s built so it couldn’t take sides if it wanted to: we don’t know who enrolled, and we hold no contact details to notify anyone. The rule is the same for every adult: anyone who passes the verified-adult check <b>and</b> has the child’s phone in hand can enrol or remove. If you and your co-parent disagree about social media, that conversation (or your parenting arrangement) has to settle it — SafeGen just makes whatever you decide stick on the apps.</p></div>
+      </details>
+      <details>
+        <summary>Can’t my child just get a second SIM, or a number I don’t know about? <span class="tw">+</span></summary>
+        <div class="a"><p>Honestly — yes. A determined teenager with a secret prepaid SIM is outside what SafeGen can see. It covers the number you know about, which for most families is the number the child actually lives on. What it removes are the <i>easy</i> workarounds — new account, new app, new birthday, one more selfie attempt — and it leaves the hard ones to the platform’s other checks. Think seatbelt, not cage: it makes the likely dodge fail, it doesn’t make dodging physically impossible.</p></div>
       </details>
       <details>
         <summary>Does my child know? Should they? <span class="tw">+</span></summary>
@@ -426,7 +444,7 @@
       </details>
       <details>
         <summary>Why should I trust you? Every company says they care about privacy. <span class="tw">+</span></summary>
-        <div class="a"><p>Don’t trust us — check us. Our protocol is published and independently reviewed; certified auditors verify that the system physically has no place to keep phone numbers; our query volumes and software versions sit in a public tamper-evident log; and Australia’s privacy regulator can (and does) hold us to section 63F, which makes keeping your data <i>illegal</i>, not just off-brand. The honest summary: we designed SafeGen so that trusting us is never the load-bearing part.</p></div>
+        <div class="a"><p>Don’t trust us — check us. Our protocol is published for anyone to review; before launch, certified auditors must verify that the system physically has no place to keep phone numbers; every software version and every platform’s query volume goes into a public record no one can quietly edit; and Australia’s privacy regulator can hold us to section 63F, which makes keeping your data <i>illegal</i>, not just off-brand. The honest summary: we designed SafeGen so that trusting us is never the load-bearing part.</p></div>
       </details>
       <details>
         <summary>Is this compulsory? Whose idea is it? <span class="tw">+</span></summary>
@@ -448,7 +466,7 @@
   <div class="wrap foot-grid">
     <div class="fcol">
       <b style="color:var(--ink)">SafeGen</b> — a signal, not a list.<br>
-      Independently audited age-assurance infrastructure supporting Australia’s Social Media Minimum Age framework.
+      An age-assurance service supporting Australia’s Social Media Minimum Age framework, independently audited from pilot launch.
       SafeGen is adopted by platforms as part of their “reasonable steps” and operates under the Online Safety Act 2021
       (incl. s63F destruction obligations, enforced by the OAIC) and the Privacy Act 1988.
     </div>

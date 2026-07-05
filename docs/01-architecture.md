@@ -1,7 +1,7 @@
 # SafeGen — Engine Design & Architecture
 
 **Parent-consented known-minor attestation infrastructure for Australia's Social Media Minimum Age (SMMA) regime.**
-*Working title: SafeGen. Tagline: "A signal, not a list."*
+*Tagline: "A signal, not a list."*
 
 > **Design goal in one sentence:** let a platform learn *"this phone number belongs to an enrolled,
 > parent-attested under-16"* — and nothing else — without any party retaining a queryable, linkable
@@ -42,7 +42,7 @@ the regulatory guidance (18 Sep 2025) allocates responsibility.
 | Actor | Role | What they can see | What they store |
 |---|---|---|---|
 | **Parent** | Legal consent authority; enrols child | Everything about own child | A revocation receipt code (offline, theirs) |
-| **Enrolment Verifier (EV)** | Ephemeral, ringfenced SafeGen component | Child's raw number + parent identity **for seconds, in memory only** | Nothing (no write path exists) |
+| **Enrolment Verifier (EV)** | Ephemeral, ringfenced SafeGen component | Child's raw number + parent identity **for seconds, in memory only** | Nothing (no local persistence; sole egress is the fixed-schema Vault insert) |
 | **Pseudonym Vault (PV)** | SafeGen's only persistent store | Opaque 32-byte pseudonyms + expiry month | `{pseudonym, expiry_month, status, h(receipt)}` |
 | **Evaluation Node (EN)** | Holds OPRF key share **k₁** in HSM | Blinded (uniformly random) group elements | k₁ (non-exportable), rate counters |
 | **Co-signer / Trustee (CT)** | Independent body holding key share **k₂** | Blinded group elements | k₂ (non-exportable), rate counters |
@@ -74,9 +74,10 @@ Two structural rules do most of the privacy work:
   service trying to give different platforms *different* PRF outputs (which would otherwise enable
   response-tagging / traffic segmentation).
 - Membership structure: signed **cuckoo filter** snapshots. Deliberate sizing choice: FPR 2⁻¹⁰ at
-  5M capacity ≈ 4 MB (a 20M-account batch screen yields ~20k false hits, each costing one ordinary
-  waterfall check — acceptable by design, and false positives add plausible deniability to filter
-  contents); a 2⁻²⁰ build (~16 MB) is available where platforms prefer fewer false escalations.
+  5M capacity ≈ 8 MB (≈13-bit fingerprints at ~0.95 load; a 20M-account batch screen yields ~20k
+  false hits, each costing one ordinary waterfall check — acceptable by design, and false
+  positives add plausible deniability to filter contents); a 2⁻²⁰ build (≈15 MB, 23-bit
+  fingerprints) is available where platforms prefer fewer false escalations.
   Snapshots are versioned and countersigned into a public **transparency log** (Merkle tree,
   CT-style).
 - Signatures: Ed25519. Receipts and snapshots are signed; snapshot signing key is separate from
@@ -117,19 +118,6 @@ the public volume log throughout). The honest residual — a very large platform
 within its legitimate quota — is bounded by **key rotation** (§3.4), which voids any accumulated
 number→pseudonym dictionary at each ratchet.
 
-### 3.4 Key rotation — bounding every cached dictionary
-
-`k₁, k₂` are ratcheted on a fixed schedule (annually, and on demand after any suspected
-compromise) in a publicly logged EN↔CT ceremony. The Vault is re-derived under the new key via a
-blinded batch pass (records are updated in place; raw numbers are never needed because
-`P_new = P_old^(k₁'k₂'/k₁k₂)` is computable jointly by the two key holders from the stored
-pseudonyms alone). Consequences:
-
-- Any dictionary of `{number → pseudonym}` accumulated by a platform, a breach, or an insider
-  **expires at the next rotation** — cached PRF outputs stop matching all future snapshots.
-- Rotation is also the periodic, rehearsed proof that the kill switch works (a rotation where the
-  old keys are destroyed and no new ones are created *is* the shutdown procedure).
-
 ### 3.3 What the Vault stores — the entire long-term record
 
 ```
@@ -148,6 +136,22 @@ No name. No date of birth. No parent identity. No address. No linkage between re
 snapshot automatically — **the system forgets every child the month they turn 16, by
 construction** (including backup media — see §6).
 
+### 3.4 Key rotation — bounding every cached dictionary
+
+`k₁, k₂` are ratcheted on a fixed schedule (annually, and on demand after any suspected
+compromise) in a publicly logged EN↔CT ceremony. The Vault is re-derived under the new key via a
+blinded batch pass (raw numbers are never needed because `P_new = P_old^(k₁'k₂'/k₁k₂)` is
+computable jointly by the two key holders from the stored pseudonyms alone). Consequences:
+
+- Any dictionary of `{number → pseudonym}` accumulated by a platform, a breach, or an insider
+  **expires at the next rotation** — cached PRF outputs stop matching all future snapshots.
+- Rotation hygiene: the update factor `Δ = k₁'k₂'/(k₁k₂)` is itself key material — computed
+  inside the HSMs and destroyed with the old shares — and the Vault re-issues record identifiers
+  and storage order at each rotation, so an observer holding before-and-after snapshots cannot
+  carry a pre-rotation dictionary across the ratchet via row correspondence.
+- Rotation is also the periodic, rehearsed proof that the kill switch works (a rotation where the
+  old keys are destroyed and no new ones are created *is* the shutdown procedure).
+
 ---
 
 ## 4. Enrolment flow (parent-facing, ~2 minutes; ~60 seconds per subsequent child)
@@ -165,8 +169,8 @@ sequenceDiagram
     Parent->>EV: 2. Child's mobile number + child's birth month/year + consent declaration
     EV->>EV: 3. Send OTP to child's number; parent enters code (proves control of the number, child present)
     EV->>EN: 4. B = H2G(m)^r   (blinded)
-    EN->>CT: 5. B^k₁
-    CT->>EV: 6. (B^k₁)^k₂ + DLEQ proof
+    EN->>CT: 5. B^k₁ + DLEQ proof (EN leg)
+    CT->>EV: 6. (B^k₁)^k₂ + DLEQ proof (CT leg) — EV verifies both
     EV->>EV: 7. Unblind → P; compute expiry month; generate receipt R
     EV->>PV: 8. Store {P, expiry, active, h(R)}
     EV->>Parent: 9. Show receipt R once (parent keeps it); session memory zeroed
@@ -189,12 +193,19 @@ Design decisions worth noting:
   transparency log (content-free), and designed to engage the s63F consent-based retention
   pathway for the derived pseudonym — with the whose-consent question (parent on behalf of a
   13–15-year-old vs the child's own capacity) treated as an open legal issue, not a solved one
-  (see §7 and §9.5).
+  (see §7 and §9 (limitation 5)).
 - **The OTP delivery path is itself ringfenced.** A naive implementation would leak every enrolled
   child's number into a commercial SMS provider's delivery logs — quietly rebuilding the exact
   list this design exists to avoid. SafeGen therefore sends OTPs via direct carrier submission
   under contractual no-log/short-purge terms, mixed with decoy traffic, with an app/passkey-based
   possession proof as the roadmap alternative. Modelled explicitly as threat **T10**.
+- **The EV is the honest single-party exposure.** For the seconds of a session, the EV alone
+  sees both the raw number and (after unblinding) its final pseudonym. A compromised or compelled
+  EV logging those pairs over time would slowly rebuild the very dictionary the split keys make
+  uncomputable at rest — so it is modelled head-on (threat model **T5a**) rather than assumed
+  away: the controls are no persistence, egress allow-listing, reproducible attested builds and
+  confidential-compute quotes, and the roadmap moves blinding/unblinding into the parent’s
+  browser so no SafeGen component ever holds a number and its pseudonym together.
 
 ## 5. Query flows (platform-facing)
 
@@ -235,7 +246,7 @@ Two modes, both double-blind. In both, **matching happens inside the platform's 
 At signup, the platform runs a single-number version of the same round (one blinded element,
 ~2 sequential exponentiations, <150 ms budget) and tests the local snapshot. A **hit at signup is
 exactly the re-registration and cross-platform-migration catch**: the child who was removed from
-Platform A and walks into Platform B with the same phone number lights up on day zero, before
+Platform A and walks into Platform B with the same phone number matches on day zero, before
 self-declared age or a coached selfie ever comes into play.
 
 ### 5.3 What the platform gets back, concretely
@@ -297,10 +308,12 @@ flowchart LR
 
 Operational properties:
 
-- **EV is destroy-by-design:** stateless container, no database driver, no volume mounts, egress
-  allow-listed to EN/SMS-gateway only; builds are reproducible and attested (measured boot /
-  confidential-compute attestation quoted in the transparency log). "We delete it" is backed by
-  "there is nowhere to write it."
+- **EV is destroy-by-design:** stateless container, no database driver, no volume mounts; egress
+  allow-listed to EN, the Vault’s fixed-schema insert endpoint, and the direct carrier submission
+  interface (T10) only. The Vault insert is the one write path that exists — schema-validated and
+  count-reconciled, though EV *integrity* ultimately rests on reproducible, attested builds
+  (measured boot / confidential-compute attestation quoted in the transparency log; threat model
+  T5a). "We delete it" is backed by "there is nowhere to keep it."
 - **PV is the only persistent store** and it is deliberately boring: no personal information
   columns exist in the schema. Its entire contents could be published tomorrow and remain
   unlinkable without both HSM keys.
@@ -327,11 +340,11 @@ almost nothing, and the answer to "under what authority?" is layered:
 
 | Information | Collected by | Used for | Fate | s63F posture |
 |---|---|---|---|---|
-| Child's raw mobile number | EV only | OTP dispatch + pseudonym derivation | Zeroed at session end; never written to disk | Destroyed after use — structurally enforced (no write path exists) and independently attested; see caveat below |
+| Child's raw mobile number | EV only | OTP dispatch + pseudonym derivation | Zeroed at session end; never written to disk | Destroyed after use — structurally enforced (no local persistence — the EV’s only egress is the fixed-schema, count-reconciled Vault insert) and independently attested; see caveat below |
 | Parent identity assertion | EV only | Enrolment policy gate | Consumed in-session; only "policy passed" survives | Destroyed after use |
 | Child's birth month/year | EV only | Compute expiry month | Discarded; only expiry month survives | Destroyed after use |
 | OTP / device metadata | EV only | Control-of-number proof | Session only | Destroyed after use |
-| **Pseudonym P + expiry month** | Derived at EV | The attestation itself | Retained until the month the child turns 16, then hard-deleted (including backups, §6) | Primary basis: express, unambiguous, informed consent to this exact purpose, captured at enrolment — the consent pathway contemplated by s63F. **Open question, stated plainly:** s63F's exception turns on the consent of *the individual the information is about*; OAIC guidance presumes capacity from around age 15, so whether a parent's consent suffices for the 13–15 cohort (or whether the child must co-consent, which the OTP-on-the-child's-phone ceremony naturally supports) needs formal advice — see §9.5. Fallback argument only: P is not reasonably identifiable without both split HSM keys; this must be distinguished carefully from mere de-identification, which s63F expressly rejects as a substitute for destruction. |
+| **Pseudonym P + expiry month** | Derived at EV | The attestation itself | Retained until the month the child turns 16, then hard-deleted (including backups, §6) | Primary basis: express, unambiguous, informed consent to this exact purpose, captured at enrolment — the consent pathway contemplated by s63F. **Open question, stated plainly:** s63F's exception turns on the consent of *the individual the information is about*; OAIC guidance presumes capacity from around age 15, so whether a parent's consent suffices for the 13–15 cohort (or whether the child must co-consent, which the OTP-on-the-child's-phone ceremony naturally supports) needs formal advice — see §9 (limitation 5). Fallback argument only: P is not reasonably identifiable without both split HSM keys; this must be distinguished carefully from mere de-identification, which s63F expressly rejects as a substitute for destruction. |
 | Blinded query elements | EN / CT | OPRF evaluation | Never stored; counters only | Uniformly random values — no personal information received at all |
 | Platform receipts / transparency log | SafeGen + platform | Compliance evidence | Retained | Content-free; contains no personal information by construction |
 

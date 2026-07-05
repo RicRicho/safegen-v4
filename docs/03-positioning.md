@@ -1,7 +1,8 @@
 # SafeGen — Positioning One-Pager
 
 **The missing layer in Australia's under-16 social media framework: a parent-consented,
-self-expiring known-minor signal that platforms adopt — not a database anyone holds.**
+self-expiring known-minor signal that platforms adopt — with no party holding a linkable or
+reversible database of children.**
 
 ---
 
@@ -21,8 +22,9 @@ already know about?"**
 
 ## What SafeGen is
 
-Parents — the legal consent authority for under-16s, and the party with both the knowledge and
-the motivation — voluntarily enrol their child's mobile number. SafeGen converts it, via a
+Parents — the consenting authority for an under-16's enrolment (the ceremony also captures the
+child's own assent via the code on their phone, pending formal s63F advice for 13-15s), and the
+party with both the knowledge and the motivation — voluntarily enrol their child's mobile number. SafeGen converts it, via a
 split-key oblivious PRF, into an unlinkable pseudonym with a built-in expiry on the child's 16th
 birthday, then destroys everything else in-session. Platforms screen the phone numbers **they
 already hold** against signed membership snapshots using blinded queries: matching happens inside
@@ -35,9 +37,9 @@ existing age-assurance waterfall — SafeGen signals, platforms decide.
 | eSafety's problem (Mar 2026 update / guidance) | What SafeGen does about it |
 |---|---|
 | **Re-registration by known under-age users** | The child's number persists across account deletions. A removed child re-registering hits the signal on day zero, at signup — before any gameable check runs. Coverage is bounded by parent enrolment and by the platform collecting a mobile number at signup; email-only paths remain with the platform's waterfall. |
-| **Cross-platform migration** | One parental enrolment lights up on every participating platform. The signal travels; the child's data doesn't. |
+| **Cross-platform migration** | One parental enrolment is recognised by every participating platform. The signal travels; the child's data doesn't. |
 | **Gamed self-declaration & repeat-attempt estimation** | SafeGen is immune to coached selfies, borrowed faces and birthday edits: the attestation was made by a verified adult, out-of-band, and can't be re-rolled by the child. Slots in as the *deterministic first layer* of the waterfall the 18 Sep 2025 guidance already prescribes. |
-| **Privacy / honeypot fears (the reason a central register was ruled out)** | There is no list to steal: 32-byte keyed pseudonyms + expiry month, reversible only if two independent organisations' HSMs are simultaneously compromised. No biometrics, no documents, no government ID — ever, from anyone. Every record self-deletes the month the child turns 16. The design is built backwards from s63F ringfence-and-destroy: everything identifying is destroyed in-session (the raw number exists for seconds, in one RAM-only component), and retention of the derived pseudonym is intended to rest on the Act's express-consent pathway — subject to formal advice on consent given by a parent on a child's behalf. |
+| **Privacy / honeypot fears (the reason a central register was ruled out)** | There is no usable list to steal: 32-byte keyed pseudonyms + expiry month, reversible only via simultaneous compromise of two independent organisations' HSMs — or by slow, publicly volume-logged online evaluation that annual key rotation renders stale. No biometrics, no documents, no government ID — ever, from anyone. Every record self-deletes the month the child turns 16. The design is built backwards from s63F ringfence-and-destroy: everything identifying is destroyed in-session (the raw number exists for seconds, in one RAM-only component), and retention of the derived pseudonym is intended to rest on the Act's express-consent pathway — subject to formal advice on consent given by a parent on a child's behalf. |
 | **eSafety must not operate infrastructure** | Correct — and it doesn't. SafeGen is commercial infrastructure **platforms adopt** as part of their s63D "reasonable steps", exactly like any third-party age-assurance provider under the technology-neutral guidance. eSafety's relationship is supervisory: audit access, transparency reports, and — if the amendment bill is enacted as introduced — compelled-documents powers over third-party providers, all answerable with artefacts containing zero personal information. **Nothing flows to government but statistics.** |
 
 ## Why this survives scrutiny that alternatives don't

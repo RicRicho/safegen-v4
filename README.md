@@ -3,9 +3,9 @@
 Buildable design artefacts for **SafeGen**, a privacy-preserving age-assurance layer that
 addresses the enforcement gaps in Australia's under-16 social media minimum age regime
 (Online Safety Act 2021 Part 4A) — designed backwards from the Act's **section 63F**
-"ringfence and destroy" rule so that no party ever holds a database of children.
+"ringfence and destroy" rule so that no party ever holds a linkable or reversible database of children.
 
-**Premise in one paragraph:** parents — the legal consent authority for under-16s — voluntarily
+**Premise in one paragraph:** parents — the consenting authority for an under-16's enrolment — voluntarily
 enrol their child's mobile number in a ~2-minute ceremony (~60 seconds per child after the
 first). SafeGen converts the number, via a split-key oblivious PRF, into an unlinkable 32-byte
 pseudonym that self-expires the month the child turns 16, and destroys everything else
@@ -49,8 +49,9 @@ GitHub (click them in the file list above), which also renders the embedded diag
 - **s63F (the hard constraint this design is built around):** personal information collected
   for age assurance must be used only for the age check, ringfenced, and **destroyed after
   use** — de-identification is not a substitute, retention of individual check records is not
-  authorised, and the OAIC enforces breaches. Hence SafeGen's transient check-and-forget
-  architecture, not a retained register.
+  authorised, and the OAIC enforces breaches. Hence SafeGen's transient
+  check-and-forget architecture: the only long-term artefact is an unlinkable, self-expiring
+  pseudonym retained under the Act's consent pathway — not a register of identities.
 - Age Assurance Technology Trial final report (2025): assurance is workable, but facial
   estimation carries ±18-month error bands near the 16 threshold, with reduced accuracy for
   some demographic groups.

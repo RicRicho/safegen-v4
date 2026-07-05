@@ -1,8 +1,7 @@
 # SafeGen — Threat Model
 
 Scope: the attestation service described in [01-architecture.md](01-architecture.md). Assets,
-adversaries, then numbered threats with mitigations and residual risk. The three mandated
-headline threats (hash reversal, parent impersonation, honeypot/breach) are T1, T2, T3.
+adversaries, then numbered threats with mitigations and residual risk. The three headline threats (hash reversal, parent impersonation, honeypot/breach) are T1, T2, T3.
 
 ## Assets
 
@@ -108,9 +107,11 @@ rich one.
   Act 2018)**: a Technical Assistance or Capability Notice does not need the keys exported; it can
   compel *evaluation* (run the dictionary through your HSMs), and its secrecy provisions can gag
   the recipient. HSM non-exportability is no defence against this, and it is why "we'd tell
-  everyone" is not a plan. Design responses: (a) the k₂ Trustee sits **offshore** in a
-  strong-rule-of-law jurisdiction, so no single legal system can compel both legs — dual
-  compulsion requires visible international process (MLAT-speed, not warrant-speed); (b) the
+  everyone" is not a plan. Design responses: (a) the design places the k₂ Trustee **offshore** in a
+  strong-rule-of-law jurisdiction (the architecture’s stated preference — under an all-Australian
+  custody arrangement this leg falls away and T3’s post-mitigation rating should be read as
+  Medium), so no single legal system can compel both legs — dual compulsion requires visible
+  international process (MLAT-speed, not warrant-speed); (b) the
   transparency log carries **signed heartbeat attestations of evaluation volumes from both
   parties**, so compelled bulk evaluation shows up as either anomalous published volume or a
   halted/withheld heartbeat — a canary-style control where the *absence* of the signal is itself
@@ -161,6 +162,20 @@ published combined key — so *neither* EN nor CT can substitute a per-platform 
 without enrolments) is visible as count discrepancies in the transparency log (every snapshot
 publishes record count + enrolment/revocation/expiry counters; auditors reconcile against EV
 attestation logs). Withholding revocations/expiries is detectable the same way.
+
+**T5a — EV pair capture (the residual single-party exposure).** The EV is the one component that
+momentarily holds both a raw number and its final pseudonym (it unblinds before storing). A
+subverted — or lawfully compelled — EV that logged these pairs would rebuild, enrolment by
+enrolment, the dictionary the split keys make uncomputable at rest; note a TOLA notice served on
+SafeGen could target the EV rather than the HSMs (T3’s analysis applies). Controls: no
+persistence layer, egress allow-listing, reproducible attested builds with measurements published
+to the transparency log, and confidential-compute attestation of the running image. The
+fixed-schema Vault insert is count-reconciled, but a subverted EV could in principle smuggle bits
+through the `receipt_hash` field — which is why EV integrity rests on attestation, not schema
+validation. Roadmap: move blinding/unblinding into the parent’s browser so no SafeGen component
+ever sees `{number, pseudonym}` together. Residual severity: **Low-Medium — the honest
+single-party exposure of the design**, bounded to enrolments occurring during the compromise
+window (never the back-catalogue, which exists only as pseudonyms).
 
 ## T6 — Denial of service against a legitimate adult (SOC, overlaps T2c)
 
@@ -223,9 +238,9 @@ enrolment ceremony until the app-based proof ships.**
 |---|---|---|---|---|
 | T1 dictionary reversal | EXT/PLAT/GOV | **Critical** | Low | Split-key OPRF, HSMs, dual rate limits + burst caps, annual key rotation, public volume logs |
 | T2 parent impersonation | SOC | High | Low-Med | Adult ID assertion, OTP-to-child-handset, consequence capping |
-| T3 honeypot/breach | EXT/INS/GOV | **Critical** | Low (bounded) | Minimal schema, split keys (offshore trustee vs TOLA), local matching, heartbeat canaries, kill switch |
+| T3 honeypot/breach | EXT/INS/GOV | **Critical** | Low (bounded; assumes offshore k₂) | Minimal schema, split keys (offshore trustee vs TOLA), local matching, heartbeat canaries, kill switch |
 | T4 platform enumeration/caching | PLAT | High | Low-Med (disclosed) | Quotas at EN **and** CT, transparency log, annual key rotation |
-| T5 malicious service | INS-L | Med | Low | VOPRF proofs, count reconciliation, attested builds |
+| T5/T5a malicious service, EV pair capture | INS-L | Med-High | Low-Med | VOPRF proofs, count reconciliation, attested builds, confidential compute |
 | T6 adult DoS | SOC | Med | Low | Waterfall-not-block, override, revoke-by-possession |
 | T7 traffic analysis | NET | Low | Low | Local matching, constant-size responses |
 | T8 SIM recycling | — | Med | Low | Expiry-at-16, possession revocation, telco feeds |
