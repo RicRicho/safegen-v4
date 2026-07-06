@@ -5,14 +5,27 @@ addresses the enforcement gaps in Australia's under-16 social media minimum age 
 (Online Safety Act 2021 Part 4A) — designed backwards from the Act's **section 63F**
 "ringfence and destroy" rule so that no party ever holds a linkable or reversible database of children.
 
-**Premise in one paragraph:** parents — the consenting authority for an under-16's enrolment — voluntarily
-enrol their child's mobile number in a ~2-minute ceremony (~60 seconds per child after the
-first). SafeGen converts the number, via a split-key oblivious PRF, into an unlinkable 32-byte
-pseudonym that self-expires the month the child turns 16, and destroys everything else
-in-session. Platforms screen numbers **they already hold** against signed membership snapshots
-using double-blind queries: matching happens inside the platform, SafeGen never learns who was
-checked, and a hit simply routes the account into the platform's existing age-assurance
-waterfall. *A signal, not a list.*
+**Premise in one paragraph:** parents — the consenting authority for an under-16's enrolment —
+voluntarily register their child's mobile number in a ~2-minute ceremony (~60 seconds per child
+after the first). Adult confirmation is an on-device **FaceIQ** check plus one-time codes to the
+parent's and the child's phones — no bank rail, no documents. SafeGen converts the number, via a
+split-key oblivious PRF, into an unlinkable 32-byte pseudonym carrying a **status flag only**
+(*Child* / *Child-with-consent* — no age, no birthday, no expiry) and destroys everything else
+in-session; when a child becomes an adult the record is **deleted, not converted**, so the list
+holds only children. Platforms screen numbers **they already hold** against signed membership
+snapshots using double-blind queries: matching happens inside the platform, SafeGen never learns
+who was checked, and a hit routes the account into the platform's existing age-assurance waterfall.
+
+**v4 is an active instrument, not a passive shield.** Register a child, and either platforms
+respect the signal (protection) or the parent's own guided, consent-based test proves they don't
+(evidence the eSafety Commissioner can use). The model's three powers: parents get a voice, the
+regulator gets ammunition, and platforms feel real pressure — a parent-verified number a platform
+still hosts is *provable* non-compliance. A "wall of shame" (held back until a real body of proven
+cases exists, with an evidence standard and a right of reply) is balanced by a "wall of fame" that
+celebrates the **first platform to integrate as the hero — "the first platform that chose to
+protect kids"** — following the guiding principle *"love your neighbour as yourself"*: firm on
+evidence, generous in redemption. Platforms integrate via a quiet API-access link at **1¢ AUD per
+call**. *A signal, not a list. A voice, not a hope.*
 
 ## What's in this repo
 
@@ -21,7 +34,7 @@ waterfall. *A signal, not a list.*
 | [`docs/01-architecture.md`](docs/01-architecture.md) | Engine design: actors and trust topology, the split-key VOPRF tokenisation scheme (and why it defeats phone-hash dictionary attacks), enrolment and query data flows (mermaid + ASCII diagrams), the s63F check-and-forget compliance story, governance and the kill switch |
 | [`docs/02-threat-model.md`](docs/02-threat-model.md) | Adversarial analysis: dictionary reversal of the AU number space, parent impersonation, honeypot/breach/compelled access, platform enumeration, adult-DoS, SIM recycling, the SMS delivery path, and more |
 | [`docs/03-positioning.md`](docs/03-positioning.md) | One-pager mapping SafeGen to the eSafety Commissioner's stated problems: re-registration by known-underage users, cross-platform migration, self-declaration gaming, and honeypot/privacy risk |
-| [`site/index.html`](site/index.html) | Parent-facing landing page mockup — trust-first design, the ~60-second enrolment flow, plain-language "what we hold / what we never hold", and an FAQ addressing privacy and honeypot fears |
+| [`site/index.html`](site/index.html) | Parent-facing landing page mockup (v4 redesign) — active-instrument framing ("register, then test the platforms yourself"), the FaceIQ + status-only registration flow, the two-outcome "protection or evidence" story, the parent-run guided test with its legitimacy design, the three strategic powers, the accountability ledger (wall of shame balanced by a wall of fame, under the "love your neighbour" principle), a quiet 1¢-AUD platform-API section, plain-language "what we hold / what we never hold", and an updated FAQ |
 
 ## How to preview the landing page (no developer tools needed)
 
